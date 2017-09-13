@@ -16,6 +16,7 @@ trait Queue[+T] {
   def remove: (Option[T], Queue[T])
 }
 
+// Solution based on default scala implementation for immutable Queues.
 object Queue {
   def empty[T]: Queue[T] = new FifoQueue[T]
 }

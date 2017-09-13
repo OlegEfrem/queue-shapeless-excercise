@@ -7,3 +7,5 @@ target
 *.swp
 *.swo
 
+# local files
+*.sc
