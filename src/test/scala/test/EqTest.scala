@@ -1,8 +1,7 @@
 package test
 
 import org.scalatest.FreeSpec
-import shapeless.{:+:, ::, CNil, Coproduct, Generic, HNil}
-
+import shapeless.{ :+:, ::, CNil, Coproduct, Generic, HNil }
 
 class EqTest extends FreeSpec {
 
@@ -65,9 +64,9 @@ class EqTest extends FreeSpec {
       val fooBarEq = Eq[FooBar]
 
       val foo1 = Foo(1, "abc")
-      val bar1 = Bar(false, 0.0)
-      val bar2 = Bar(true, 1.0)
-      val bar3 = Bar(true, 1.0)
+      val bar1 = Bar(b = false, 0.0)
+      val bar2 = Bar(b = true, 1.0)
+      val bar3 = Bar(b = true, 1.0)
 
       val fooBar1: FooBar = foo1
       val fooBar2: FooBar = bar1

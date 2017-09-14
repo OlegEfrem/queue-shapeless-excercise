@@ -1,6 +1,6 @@
 package test
 
-import org.scalatest.{FreeSpec, Matchers, OptionValues}
+import org.scalatest.{ FreeSpec, Matchers, OptionValues }
 import scala.util.Random
 
 class FifoQueueTest extends FreeSpec with Matchers with OptionValues {
@@ -15,19 +15,19 @@ class FifoQueueTest extends FreeSpec with Matchers with OptionValues {
     "isEmpty should have Q(1) in milliseconds" in {
       val emptyExecutionTime = executionTimeFor(emptyQueue.isEmpty)
       val bigExecutionTime = executionTimeFor(bigQueue.isEmpty)
-      abs(emptyExecutionTime - bigExecutionTime) should be <= 1l //time difference is one millisecond or less
+      abs(emptyExecutionTime - bigExecutionTime) should be <= 1L //time difference is one millisecond or less
     }
 
     "insert should have Q(1) in milliseconds" in {
       val emptyExecutionTime = executionTimeFor(emptyQueue.insert(1))
       val bigExecutionTime = executionTimeFor(bigQueue.insert(1))
-      abs(emptyExecutionTime - bigExecutionTime) should be <= 1l
+      abs(emptyExecutionTime - bigExecutionTime) should be <= 1L
     }
 
     "remove should have amortized Q(1) = less than 2 milliseconds" in {
       val emptyExecutionTime = executionTimeFor(emptyQueue.remove)
       val bigExecutionTime = executionTimeFor(bigQueue.remove)
-      abs(emptyExecutionTime - bigExecutionTime) should be <= 2l //might take slightly longer because it has to reverse in list into out, when latter is empty
+      abs(emptyExecutionTime - bigExecutionTime) should be <= 2L //might take slightly longer because it has to reverse in list into out, when latter is empty
     }
 
     "insert should not be constant in nanoseconds" in {
@@ -68,9 +68,9 @@ class FifoQueueTest extends FreeSpec with Matchers with OptionValues {
       }
     }
 
-    val removeQueueElements: List[T] = List(1, 2, 3)
-    val removeQueue = new FifoQueue[T](removeQueueElements)
     "remove should" - {
+      val removeQueueElements: List[T] = List(1, 2, 3)
+      val removeQueue = new FifoQueue[T](removeQueueElements)
       "return a new queue with the first inserted element removed" in {
         val result = removeQueue.remove._2
         result.asInstanceOf[FifoQueue[T]].all should contain theSameElementsInOrderAs removeQueueElements.init
@@ -84,6 +84,18 @@ class FifoQueueTest extends FreeSpec with Matchers with OptionValues {
       "not mutate the original queue" in {
         removeQueue.remove
         removeQueue.all should contain theSameElementsInOrderAs removeQueueElements
+      }
+    }
+
+    "toString should" - {
+      "return all values for a non empty queue" in {
+        val queue = new FifoQueue[Int](List(1, 2, 3))
+        queue.toString shouldBe "1,2,3"
+        queue.toString shouldNot be("1,2,3,4")
+      }
+
+      "return empty string for an empty queue" in {
+        emptyQueue.toString shouldBe ""
       }
     }
   }

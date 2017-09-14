@@ -23,29 +23,30 @@ import shapeless._
   You may wish to add additional tests
  */
 
-
-// Implementation based on: https://github.com/milessabin/shapeless-type-class-derivation-2015-demo/blob/master/src/main/scala/derivation/derivation.scala#L89
 sealed trait Eq[T] {
   def eqv(t1: T, t2: T): Boolean
+
   def neqv(t1: T, t2: T): Boolean = !eqv(t1, t2)
 }
 
 object Eq {
   def apply[T](implicit ev: Eq[T]): Eq[T] = ev
+
   def instance[T](f: (T, T) => Boolean): Eq[T] = new Eq[T] {
     def eqv(t1: T, t2: T): Boolean = f(t1, t2)
   }
 
   // Part 1
-  implicit val intEq:     Eq[Int]     = Eq.instance((x: Int, y: Int) => x == y)
-  implicit val doubleEq:  Eq[Double]  = Eq.instance((x: Double, y: Double) => x == y)
+  implicit val intEq: Eq[Int] = Eq.instance((x: Int, y: Int) => x == y)
+  implicit val doubleEq: Eq[Double] = Eq.instance((x: Double, y: Double) => x == y)
   implicit val booleanEq: Eq[Boolean] = Eq.instance((x: Boolean, y: Boolean) => x == y)
-  implicit val stringEq:  Eq[String]  = Eq.instance((x: String, y: String) => x == y)
+  implicit val stringEq: Eq[String] = Eq.instance((x: String, y: String) => x == y)
 
   // Part 2
   implicit val eqHNil: Eq[HNil] = new Eq[HNil] {
     def eqv(x: HNil, y: HNil): Boolean = true
   }
+
   implicit def hconsEq[H, T <: HList](implicit eqH: Lazy[Eq[H]], eqT: Lazy[Eq[T]]): Eq[H :: T] =
     new Eq[H :: T] {
       def eqv(x: H :: T, y: H :: T): Boolean =
@@ -53,9 +54,12 @@ object Eq {
     }
 
   // Part 3
+  // $COVERAGE-OFF$
   implicit val eqCNil: Eq[CNil] = new Eq[CNil] {
     def eqv(x: CNil, y: CNil): Boolean = true
   }
+  // $COVERAGE-ON$
+
   implicit def cconsEq[L, R <: Coproduct](implicit eqH: Lazy[Eq[L]], eqT: Lazy[Eq[R]]): Eq[L :+: R] =
     new Eq[L :+: R] {
       def eqv(x: L :+: R, y: L :+: R): Boolean =
@@ -76,9 +80,12 @@ object Eq {
 }
 
 object ImplicitOps {
+
   implicit class EqOps[T](x: T)(implicit ev: Eq[T]) {
-    def ====(y: T): Boolean = ev.eqv(x, y)
-    def !===(y: T): Boolean = ev.neqv(x, y)
+    def ====(y: T): Boolean = ev.eqv(x, y) // scalastyle:ignore
+
+    def !===(y: T): Boolean = ev.neqv(x, y) // scalastyle:ignore
   }
+
 }
 
