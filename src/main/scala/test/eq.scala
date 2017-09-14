@@ -31,7 +31,7 @@ sealed trait Eq[T] {
 }
 
 object Eq {
-  def apply[T](implicit ev: Eq[T]) = ev
+  def apply[T](implicit ev: Eq[T]): Eq[T] = ev
   def instance[T](f: (T, T) => Boolean): Eq[T] = new Eq[T] {
     def eqv(t1: T, t2: T): Boolean = f(t1, t2)
   }
@@ -73,63 +73,12 @@ object Eq {
         eqRepr.value.eqv(gen.to(x), gen.to(y))
     }
 
+}
+
+object ImplicitOps {
   implicit class EqOps[T](x: T)(implicit ev: Eq[T]) {
-    def ===(y: T): Boolean = ev.eqv(x, y)
-    def !==(y: T): Boolean = ev.neqv(x, y)
+    def ====(y: T): Boolean = ev.eqv(x, y)
+    def !===(y: T): Boolean = ev.neqv(x, y)
   }
-
 }
 
-object EqTest extends App {
-  type Product = Int :: String :: Boolean :: Double :: HNil
-  type CoProduct = Int :+: String :+: Boolean :+: Double :+: CNil
-
-  val productEq   = Eq[Product]
-  val coProductEq = Eq[CoProduct]
-
-  import Eq._
-
-  val product1 = 1 :: "abc" :: false :: 0.0 :: HNil
-  val product2 = 2 :: "def" :: true  :: 1.0 :: HNil
-  assert(product1 === product1)
-  assert(product2 === product2)
-  assert(product1 !== product2)
-
-  val coproduct1 = Coproduct[CoProduct](3.0)
-  val coproduct2 = Coproduct[CoProduct](false)
-  assert(coproduct1 === coproduct1)
-  assert(coproduct2 === coproduct2)
-  assert(coproduct1 !== coproduct2)
-
-  sealed trait FooBar
-  case class Foo(i: Int, s: String) extends FooBar
-  case class Foo1(i: Int, s: String) extends FooBar
-  case class Bar(b: Boolean, d: Double) extends FooBar
-
-  val fooEq    = Eq[Foo]
-  val barEq    = Eq[Bar]
-  val fooBarEq = Eq[FooBar]
-
-  val foo1 = Foo(1, "abc")
-  val foo2 = Foo(2, "def")
-
-  assert(foo1 === foo1)
-  assert(foo1 === foo1)
-  assert(foo1 !== foo2)
-
-  val bar1 = Bar(false, 0.0)
-  val bar2 = Bar(true, 1.0)
-  assert(bar1 === bar1)
-  assert(bar1 === bar1)
-  assert(bar1 !== bar2)
-
-  val fooBar1: FooBar = foo1
-  val fooBar2: FooBar = bar1
-  val fooBar3: FooBar = Foo1(1, "abc")
-
-  assert(fooBar1 === fooBar1)
-  assert(fooBar2 === fooBar2)
-  assert(fooBar1 !== fooBar2)
-  assert(fooBar1 !== fooBar3)
-
-}
